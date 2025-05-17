@@ -1,0 +1,9 @@
+streamlit
+pandas
+numpy
+mlxtend
+plotly
+networkx
+matplotlib
+seaborn
+wordcloud
