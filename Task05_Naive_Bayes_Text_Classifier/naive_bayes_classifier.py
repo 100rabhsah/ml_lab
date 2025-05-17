@@ -9,18 +9,22 @@ from nltk.tokenize import word_tokenize
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Download required NLTK data at module level
+def download_nltk_data():
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        nltk.download('punkt', quiet=True)
+    try:
+        nltk.data.find('corpora/stopwords')
+    except LookupError:
+        nltk.download('stopwords', quiet=True)
+
+# Download NLTK data when module is imported
+download_nltk_data()
+
 class NaiveBayesTextClassifier:
     def __init__(self):
-        # Download required NLTK data
-        try:
-            nltk.data.find('tokenizers/punkt')
-        except LookupError:
-            nltk.download('punkt')
-        try:
-            nltk.data.find('corpora/stopwords')
-        except LookupError:
-            nltk.download('stopwords')
-        
         self.vectorizer = CountVectorizer(stop_words='english')
         self.classifier = MultinomialNB()
         self.stop_words = set(stopwords.words('english'))
