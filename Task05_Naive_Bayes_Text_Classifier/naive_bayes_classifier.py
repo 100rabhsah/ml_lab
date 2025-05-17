@@ -5,16 +5,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 import nltk
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+import re
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Download required NLTK data at module level
 def download_nltk_data():
-    try:
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        nltk.download('punkt', quiet=True)
     try:
         nltk.data.find('corpora/stopwords')
     except LookupError:
@@ -31,10 +27,18 @@ class NaiveBayesTextClassifier:
     
     def preprocess_text(self, text):
         """Preprocess the input text by tokenizing and removing stopwords."""
-        # Tokenize the text
-        tokens = word_tokenize(text.lower())
+        # Convert to lowercase
+        text = text.lower()
+        
+        # Remove special characters and digits
+        text = re.sub(r'[^a-zA-Z\s]', '', text)
+        
+        # Split into words
+        tokens = text.split()
+        
         # Remove stopwords and non-alphabetic tokens
         tokens = [word for word in tokens if word.isalpha() and word not in self.stop_words]
+        
         return ' '.join(tokens)
     
     def fit(self, texts, labels):
