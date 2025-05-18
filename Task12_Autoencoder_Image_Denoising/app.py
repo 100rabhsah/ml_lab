@@ -1,7 +1,9 @@
 import streamlit as st
-import torch
 from PIL import Image
 import os
+import torch
+from torchvision import transforms
+from autoencoder import Autoencoder
 
 # Get the absolute path to the directory containing this script
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -85,49 +87,37 @@ st.markdown("""
 3. Watch as the model tries to clean it up!
 """)
 
-# Add file uploader
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    # Load the model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model_path = os.path.join(RESULTS_DIR, "autoencoder_model.pth")
     model = Autoencoder().to(device)
-    
-    try:
-        model.load_state_dict(torch.load('results/autoencoder_model.pth', map_location=device))
-        model.eval()
-        
-        # Process the uploaded image
-        image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
-        transform = transforms.Compose([
-            transforms.Resize((28, 28)),
-            transforms.ToTensor()
-        ])
-        
-        # Prepare the image
-        img_tensor = transform(image).unsqueeze(0).to(device)
-        
-        # Add noise
-        noisy_img = img_tensor + 0.3 * torch.randn_like(img_tensor)
-        noisy_img = torch.clamp(noisy_img, 0., 1.)
-        
-        # Get reconstruction
-        with torch.no_grad():
-            reconstructed = model(noisy_img)
-        
-        # Display results
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.image(image, caption="Original Image")
-        
-        with col2:
-            st.image(noisy_img[0].cpu().numpy(), caption="Noisy Image")
-        
-        with col3:
-            st.image(reconstructed[0].cpu().numpy(), caption="Reconstructed Image")
-    except Exception as e:
-        st.error(f"Error processing the image: {str(e)}")
+    if os.path.exists(model_path):
+        try:
+            model.load_state_dict(torch.load(model_path, map_location=device))
+            model.eval()
+            image = Image.open(uploaded_file).convert('L')
+            transform = transforms.Compose([
+                transforms.Resize((28, 28)),
+                transforms.ToTensor()
+            ])
+            img_tensor = transform(image).unsqueeze(0).to(device)
+            noisy_img = img_tensor + 0.3 * torch.randn_like(img_tensor)
+            noisy_img = torch.clamp(noisy_img, 0., 1.)
+            with torch.no_grad():
+                reconstructed = model(noisy_img)
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.image(image, caption="Original Image")
+            with col2:
+                st.image(noisy_img[0].cpu().numpy().squeeze(), caption="Noisy Image")
+            with col3:
+                st.image(reconstructed[0].cpu().numpy().squeeze(), caption="Reconstructed Image")
+        except Exception as e:
+            st.error(f"Error processing the image: {str(e)}")
+    else:
+        st.warning("Trained model not found. Please make sure 'results/autoencoder_model.pth' is present in your deployment.")
 
 # Footer
 st.markdown("---")
