@@ -3,18 +3,14 @@ import torch
 from PIL import Image
 import os
 
+# Get the absolute path to the directory containing this script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+RESULTS_DIR = os.path.join(BASE_DIR, "results")
+
 # List of reconstruction images in order, with the correct folder path
 reconstruction_files = [
-    "results/reconstruction_epoch_5.png",
-    "results/reconstruction_epoch_10.png",
-    "results/reconstruction_epoch_15.png",
-    "results/reconstruction_epoch_20.png",
-    "results/reconstruction_epoch_25.png",
-    "results/reconstruction_epoch_30.png",
-    "results/reconstruction_epoch_35.png",
-    "results/reconstruction_epoch_40.png",
-    "results/reconstruction_epoch_45.png",
-    "results/reconstruction_epoch_50.png",
+    os.path.join(RESULTS_DIR, f"reconstruction_epoch_{i}.png")
+    for i in [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 ]
 
 # Set page config
@@ -41,16 +37,20 @@ Think of it like having a smart assistant that can look at a blurry or noisy pic
 """)
 
 # Show the loss plot
+t_loss = os.path.join(RESULTS_DIR, "loss_plot.png")
 st.header("📊 Training Progress")
-loss_plot = Image.open("results/loss_plot.png")
-st.image(loss_plot, caption="Training and Testing Losses Over Time")
-st.markdown("""
-### Understanding the Loss Plot
-- The blue line shows how well the model is learning during training
-- The orange line shows how well it performs on new, unseen images
-- Lower values mean better performance
-- The lines getting closer to zero means the model is getting better at cleaning up noisy images!
-""")
+if os.path.exists(t_loss):
+    loss_plot = Image.open(t_loss)
+    st.image(loss_plot, caption="Training and Testing Losses Over Time")
+    st.markdown("""
+    ### Understanding the Loss Plot
+    - The blue line shows how well the model is learning during training
+    - The orange line shows how well it performs on new, unseen images
+    - Lower values mean better performance
+    - The lines getting closer to zero means the model is getting better at cleaning up noisy images!
+    """)
+else:
+    st.warning("Loss plot not found. Please make sure 'results/loss_plot.png' is present in your deployment.")
 
 # Show reconstructions
 st.header("🖼️ Image Reconstructions")
@@ -64,14 +64,17 @@ st.markdown("""
 tabs = st.tabs([f"Epoch {i*5}" for i in range(1, len(reconstruction_files) + 1)])
 for tab, file in zip(tabs, reconstruction_files):
     with tab:
-        img = Image.open(file)
-        st.image(img, caption=f"Reconstruction Results at {os.path.basename(file)}")
-        st.markdown("""
-        ### How to interpret these results:
-        1. Look at how the noisy images (middle row) have random speckles and blur
-        2. Notice how the reconstructed images (bottom row) are much clearer
-        3. The model gets better at cleaning up the images as training progresses
-        """)
+        if os.path.exists(file):
+            img = Image.open(file)
+            st.image(img, caption=f"Reconstruction Results at {os.path.basename(file)}")
+            st.markdown("""
+            ### How to interpret these results:
+            1. Look at how the noisy images (middle row) have random speckles and blur
+            2. Notice how the reconstructed images (bottom row) are much clearer
+            3. The model gets better at cleaning up the images as training progresses
+            """)
+        else:
+            st.warning(f"Image {os.path.basename(file)} not found. Please make sure it is present in your deployment.")
 
 # Interactive demo section
 st.header("🎮 Try it yourself!")
