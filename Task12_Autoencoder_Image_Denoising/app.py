@@ -30,31 +30,16 @@ Think of it like having a smart assistant that can look at a blurry or noisy pic
    - Remove the noise and restore the image
 """)
 
-# Create results directory if it doesn't exist
-os.makedirs('results', exist_ok=True)
-
 # Load the loss plot
 st.header("📊 Training Progress")
-loss_plot_path = 'results/loss_plot.png'
-if os.path.exists(loss_plot_path):
-    st.image(loss_plot_path, caption='Training and Testing Losses Over Time')
-    st.markdown("""
-    ### Understanding the Loss Plot
-    - The blue line shows how well the model is learning during training
-    - The orange line shows how well it performs on new, unseen images
-    - Lower values mean better performance
-    - The lines getting closer to zero means the model is getting better at cleaning up noisy images!
-    """)
-else:
-    st.warning("""
-    ⚠️ Training results not found. This could be because:
-    1. The model hasn't been trained yet
-    2. The results folder is not properly set up
-    
-    To see the results:
-    1. Run `python train.py` to train the model
-    2. Make sure the 'results' folder contains the training outputs
-    """)
+st.image('results/loss_plot.png', caption='Training and Testing Losses Over Time')
+st.markdown("""
+### Understanding the Loss Plot
+- The blue line shows how well the model is learning during training
+- The orange line shows how well it performs on new, unseen images
+- Lower values mean better performance
+- The lines getting closer to zero means the model is getting better at cleaning up noisy images!
+""")
 
 # Load and display reconstruction results
 st.header("🖼️ Image Reconstructions")
@@ -68,29 +53,18 @@ st.markdown("""
 # Get all reconstruction images
 reconstruction_files = sorted(glob.glob('results/reconstruction_epoch_*.png'))
 
-if reconstruction_files:
-    # Create tabs for different epochs
-    tabs = st.tabs([f"Epoch {i*5}" for i in range(1, len(reconstruction_files) + 1)])
-    
-    for tab, file in zip(tabs, reconstruction_files):
-        with tab:
-            st.image(file, caption=f'Reconstruction Results at {os.path.basename(file)}')
-            st.markdown("""
-            ### How to interpret these results:
-            1. Look at how the noisy images (middle row) have random speckles and blur
-            2. Notice how the reconstructed images (bottom row) are much clearer
-            3. The model gets better at cleaning up the images as training progresses
-            """)
-else:
-    st.warning("""
-    ⚠️ No reconstruction images found. This could be because:
-    1. The model hasn't been trained yet
-    2. The training process didn't complete successfully
-    
-    To see the reconstructions:
-    1. Run `python train.py` to train the model
-    2. Wait for the training to complete (it will save images every 5 epochs)
-    """)
+# Create tabs for different epochs
+tabs = st.tabs([f"Epoch {i*5}" for i in range(1, len(reconstruction_files) + 1)])
+
+for tab, file in zip(tabs, reconstruction_files):
+    with tab:
+        st.image(file, caption=f'Reconstruction Results at {os.path.basename(file)}')
+        st.markdown("""
+        ### How to interpret these results:
+        1. Look at how the noisy images (middle row) have random speckles and blur
+        2. Notice how the reconstructed images (bottom row) are much clearer
+        3. The model gets better at cleaning up the images as training progresses
+        """)
 
 # Interactive demo section
 st.header("🎮 Try it yourself!")
@@ -109,53 +83,41 @@ if uploaded_file is not None:
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = Autoencoder().to(device)
     
-    model_path = 'results/autoencoder_model.pth'
-    if os.path.exists(model_path):
-        try:
-            model.load_state_dict(torch.load(model_path, map_location=device))
-            model.eval()
-            
-            # Process the uploaded image
-            image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
-            transform = transforms.Compose([
-                transforms.Resize((28, 28)),
-                transforms.ToTensor()
-            ])
-            
-            # Prepare the image
-            img_tensor = transform(image).unsqueeze(0).to(device)
-            
-            # Add noise
-            noisy_img = img_tensor + 0.3 * torch.randn_like(img_tensor)
-            noisy_img = torch.clamp(noisy_img, 0., 1.)
-            
-            # Get reconstruction
-            with torch.no_grad():
-                reconstructed = model(noisy_img)
-            
-            # Display results
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                st.image(image, caption="Original Image")
-            
-            with col2:
-                st.image(noisy_img[0].cpu().numpy(), caption="Noisy Image")
-            
-            with col3:
-                st.image(reconstructed[0].cpu().numpy(), caption="Reconstructed Image")
-        except Exception as e:
-            st.error(f"Error processing the image: {str(e)}")
-    else:
-        st.error("""
-        ⚠️ Model file not found. This could be because:
-        1. The model hasn't been trained yet
-        2. The training process didn't complete successfully
+    try:
+        model.load_state_dict(torch.load('results/autoencoder_model.pth', map_location=device))
+        model.eval()
         
-        To use the interactive demo:
-        1. Run `python train.py` to train the model
-        2. Wait for the training to complete and save the model
-        """)
+        # Process the uploaded image
+        image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
+        transform = transforms.Compose([
+            transforms.Resize((28, 28)),
+            transforms.ToTensor()
+        ])
+        
+        # Prepare the image
+        img_tensor = transform(image).unsqueeze(0).to(device)
+        
+        # Add noise
+        noisy_img = img_tensor + 0.3 * torch.randn_like(img_tensor)
+        noisy_img = torch.clamp(noisy_img, 0., 1.)
+        
+        # Get reconstruction
+        with torch.no_grad():
+            reconstructed = model(noisy_img)
+        
+        # Display results
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.image(image, caption="Original Image")
+        
+        with col2:
+            st.image(noisy_img[0].cpu().numpy(), caption="Noisy Image")
+        
+        with col3:
+            st.image(reconstructed[0].cpu().numpy(), caption="Reconstructed Image")
+    except Exception as e:
+        st.error(f"Error processing the image: {str(e)}")
 
 # Footer
 st.markdown("---")
