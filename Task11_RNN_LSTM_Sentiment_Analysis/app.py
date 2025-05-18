@@ -2,8 +2,10 @@ import streamlit as st
 from PIL import Image
 import os
 
-def load_image(image_path):
-    """Load image with error handling."""
+def load_image(image_name):
+    """Load image robustly, using the script's directory."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    image_path = os.path.join(script_dir, image_name)
     try:
         if not os.path.exists(image_path):
             st.error(f"Image file not found: {image_path}")
