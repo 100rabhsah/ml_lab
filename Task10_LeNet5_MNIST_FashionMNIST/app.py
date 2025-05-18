@@ -6,6 +6,7 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 from lenet5 import LeNet5
+import os
 
 # Set page config
 st.set_page_config(
@@ -36,7 +37,11 @@ if page == "Training History":
     
     with col1:
         st.subheader("MNIST Dataset")
-        st.image("MNIST_training_history.png", use_column_width=True)
+        if os.path.exists("MNIST_training_history.png"):
+            st.image("MNIST_training_history.png", use_column_width=True)
+        else:
+            st.warning("MNIST training history plot not found. Please run the training script first.")
+            st.info("To generate the plot, run: python lenet5.py")
         st.markdown("""
         **MNIST Dataset Results:**
         - The model was trained on handwritten digits (0-9)
@@ -46,7 +51,11 @@ if page == "Training History":
     
     with col2:
         st.subheader("Fashion MNIST Dataset")
-        st.image("FashionMNIST_training_history.png", use_column_width=True)
+        if os.path.exists("FashionMNIST_training_history.png"):
+            st.image("FashionMNIST_training_history.png", use_column_width=True)
+        else:
+            st.warning("Fashion MNIST training history plot not found. Please run the training script first.")
+            st.info("To generate the plot, run: python lenet5.py")
         st.markdown("""
         **Fashion MNIST Dataset Results:**
         - The model was trained on clothing items (10 categories)
@@ -101,19 +110,32 @@ else:  # Try it Yourself
     The model will predict whether it's a digit (0-9) or a clothing item.
     """)
     
+    # Check if model files exist
+    mnist_model_exists = os.path.exists('mnist_lenet5.pth')
+    fashion_mnist_model_exists = os.path.exists('fashion_mnist_lenet5.pth')
+    
+    if not (mnist_model_exists and fashion_mnist_model_exists):
+        st.warning("Model files not found. Please run the training script first.")
+        st.info("To train the models, run: python lenet5.py")
+        st.stop()
+    
     # Model selection
     model_type = st.radio("Select Model", ["MNIST (Digits)", "Fashion MNIST (Clothing)"])
     
     # Load the appropriate model
     @st.cache_resource
     def load_model(model_type):
-        model = LeNet5()
-        if model_type == "MNIST (Digits)":
-            model.load_state_dict(torch.load('mnist_lenet5.pth', map_location=torch.device('cpu')))
-        else:
-            model.load_state_dict(torch.load('fashion_mnist_lenet5.pth', map_location=torch.device('cpu')))
-        model.eval()
-        return model
+        try:
+            model = LeNet5()
+            if model_type == "MNIST (Digits)":
+                model.load_state_dict(torch.load('mnist_lenet5.pth', map_location=torch.device('cpu')))
+            else:
+                model.load_state_dict(torch.load('fashion_mnist_lenet5.pth', map_location=torch.device('cpu')))
+            model.eval()
+            return model
+        except Exception as e:
+            st.error(f"Error loading model: {str(e)}")
+            st.stop()
     
     model = load_model(model_type)
     
@@ -121,43 +143,46 @@ else:  # Try it Yourself
     uploaded_file = st.file_uploader("Upload an image", type=['png', 'jpg', 'jpeg'])
     
     if uploaded_file is not None:
-        # Process the image
-        image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
-        transform = transforms.Compose([
-            transforms.Resize((28, 28)),
-            transforms.ToTensor(),
-            transforms.Normalize((0.5,), (0.5,))
-        ])
-        
-        # Display the image
-        st.image(image, caption="Uploaded Image", width=200)
-        
-        # Make prediction
-        if st.button("Predict"):
-            # Transform image
-            img_tensor = transform(image).unsqueeze(0)
+        try:
+            # Process the image
+            image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
+            transform = transforms.Compose([
+                transforms.Resize((28, 28)),
+                transforms.ToTensor(),
+                transforms.Normalize((0.5,), (0.5,))
+            ])
             
-            # Get prediction
-            with torch.no_grad():
-                output = model(img_tensor)
-                _, predicted = torch.max(output, 1)
+            # Display the image
+            st.image(image, caption="Uploaded Image", width=200)
+            
+            # Make prediction
+            if st.button("Predict"):
+                # Transform image
+                img_tensor = transform(image).unsqueeze(0)
                 
-            # Display result
-            if model_type == "MNIST (Digits)":
-                st.success(f"Predicted Digit: {predicted.item()}")
-            else:
-                fashion_classes = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-                                 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
-                st.success(f"Predicted Item: {fashion_classes[predicted.item()]}")
-            
-            # Show confidence scores
-            probabilities = torch.nn.functional.softmax(output, dim=1)[0]
-            st.write("Confidence Scores:")
-            for i, prob in enumerate(probabilities):
+                # Get prediction
+                with torch.no_grad():
+                    output = model(img_tensor)
+                    _, predicted = torch.max(output, 1)
+                    
+                # Display result
                 if model_type == "MNIST (Digits)":
-                    st.write(f"Digit {i}: {prob.item():.2%}")
+                    st.success(f"Predicted Digit: {predicted.item()}")
                 else:
-                    st.write(f"{fashion_classes[i]}: {prob.item():.2%}")
+                    fashion_classes = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+                                     'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+                    st.success(f"Predicted Item: {fashion_classes[predicted.item()]}")
+                
+                # Show confidence scores
+                probabilities = torch.nn.functional.softmax(output, dim=1)[0]
+                st.write("Confidence Scores:")
+                for i, prob in enumerate(probabilities):
+                    if model_type == "MNIST (Digits)":
+                        st.write(f"Digit {i}: {prob.item():.2%}")
+                    else:
+                        st.write(f"{fashion_classes[i]}: {prob.item():.2%}")
+        except Exception as e:
+            st.error(f"Error processing image: {str(e)}")
 
 # Footer
 st.markdown("---")
