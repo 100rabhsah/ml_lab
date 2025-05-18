@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 from lenet5 import LeNet5
 import os
 
+# Get the current directory
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Set page config
 st.set_page_config(
     page_title="LeNet-5 MNIST & Fashion MNIST Visualizer",
@@ -37,8 +40,9 @@ if page == "Training History":
     
     with col1:
         st.subheader("MNIST Dataset")
-        if os.path.exists("MNIST_training_history.png"):
-            st.image("MNIST_training_history.png", use_column_width=True)
+        mnist_plot_path = os.path.join(CURRENT_DIR, "MNIST_training_history.png")
+        if os.path.exists(mnist_plot_path):
+            st.image(mnist_plot_path, use_column_width=True)
         else:
             st.warning("MNIST training history plot not found. Please run the training script first.")
             st.info("To generate the plot, run: python lenet5.py")
@@ -51,8 +55,9 @@ if page == "Training History":
     
     with col2:
         st.subheader("Fashion MNIST Dataset")
-        if os.path.exists("FashionMNIST_training_history.png"):
-            st.image("FashionMNIST_training_history.png", use_column_width=True)
+        fashion_mnist_plot_path = os.path.join(CURRENT_DIR, "FashionMNIST_training_history.png")
+        if os.path.exists(fashion_mnist_plot_path):
+            st.image(fashion_mnist_plot_path, use_column_width=True)
         else:
             st.warning("Fashion MNIST training history plot not found. Please run the training script first.")
             st.info("To generate the plot, run: python lenet5.py")
@@ -111,8 +116,11 @@ else:  # Try it Yourself
     """)
     
     # Check if model files exist
-    mnist_model_exists = os.path.exists('mnist_lenet5.pth')
-    fashion_mnist_model_exists = os.path.exists('fashion_mnist_lenet5.pth')
+    mnist_model_path = os.path.join(CURRENT_DIR, 'mnist_lenet5.pth')
+    fashion_mnist_model_path = os.path.join(CURRENT_DIR, 'fashion_mnist_lenet5.pth')
+    
+    mnist_model_exists = os.path.exists(mnist_model_path)
+    fashion_mnist_model_exists = os.path.exists(fashion_mnist_model_path)
     
     if not (mnist_model_exists and fashion_mnist_model_exists):
         st.warning("Model files not found. Please run the training script first.")
@@ -128,9 +136,9 @@ else:  # Try it Yourself
         try:
             model = LeNet5()
             if model_type == "MNIST (Digits)":
-                model.load_state_dict(torch.load('mnist_lenet5.pth', map_location=torch.device('cpu')))
+                model.load_state_dict(torch.load(mnist_model_path, map_location=torch.device('cpu')))
             else:
-                model.load_state_dict(torch.load('fashion_mnist_lenet5.pth', map_location=torch.device('cpu')))
+                model.load_state_dict(torch.load(fashion_mnist_model_path, map_location=torch.device('cpu')))
             model.eval()
             return model
         except Exception as e:
