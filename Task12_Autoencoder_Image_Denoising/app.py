@@ -1,11 +1,21 @@
 import streamlit as st
 import torch
-import matplotlib.pyplot as plt
 from PIL import Image
 import os
-import glob
-from autoencoder import Autoencoder
-import torchvision.transforms as transforms
+
+# List of reconstruction images in order, with the correct folder path
+reconstruction_files = [
+    "results/reconstruction_epoch_5.png",
+    "results/reconstruction_epoch_10.png",
+    "results/reconstruction_epoch_15.png",
+    "results/reconstruction_epoch_20.png",
+    "results/reconstruction_epoch_25.png",
+    "results/reconstruction_epoch_30.png",
+    "results/reconstruction_epoch_35.png",
+    "results/reconstruction_epoch_40.png",
+    "results/reconstruction_epoch_45.png",
+    "results/reconstruction_epoch_50.png",
+]
 
 # Set page config
 st.set_page_config(
@@ -30,9 +40,10 @@ Think of it like having a smart assistant that can look at a blurry or noisy pic
    - Remove the noise and restore the image
 """)
 
-# Load the loss plot
+# Show the loss plot
 st.header("📊 Training Progress")
-st.image('results/loss_plot.png', caption='Training and Testing Losses Over Time')
+loss_plot = Image.open("results/loss_plot.png")
+st.image(loss_plot, caption="Training and Testing Losses Over Time")
 st.markdown("""
 ### Understanding the Loss Plot
 - The blue line shows how well the model is learning during training
@@ -41,7 +52,7 @@ st.markdown("""
 - The lines getting closer to zero means the model is getting better at cleaning up noisy images!
 """)
 
-# Load and display reconstruction results
+# Show reconstructions
 st.header("🖼️ Image Reconstructions")
 st.markdown("""
 ### What you're seeing below:
@@ -50,15 +61,11 @@ st.markdown("""
 - **Reconstructed**: The cleaned-up versions produced by our Autoencoder
 """)
 
-# Get all reconstruction images
-reconstruction_files = sorted(glob.glob('results/reconstruction_epoch_*.png'))
-
-# Create tabs for different epochs
 tabs = st.tabs([f"Epoch {i*5}" for i in range(1, len(reconstruction_files) + 1)])
-
 for tab, file in zip(tabs, reconstruction_files):
     with tab:
-        st.image(file, caption=f'Reconstruction Results at {os.path.basename(file)}')
+        img = Image.open(file)
+        st.image(img, caption=f"Reconstruction Results at {os.path.basename(file)}")
         st.markdown("""
         ### How to interpret these results:
         1. Look at how the noisy images (middle row) have random speckles and blur
