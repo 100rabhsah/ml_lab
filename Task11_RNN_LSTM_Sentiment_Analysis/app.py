@@ -2,6 +2,18 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
+import os
+
+def load_image(image_path):
+    """Load image with error handling and debugging."""
+    try:
+        if not os.path.exists(image_path):
+            st.error(f"Image file not found: {image_path}")
+            return None
+        return Image.open(image_path)
+    except Exception as e:
+        st.error(f"Error loading image {image_path}: {str(e)}")
+        return None
 
 def main():
     st.set_page_config(
@@ -9,6 +21,13 @@ def main():
         page_icon="😊",
         layout="wide"
     )
+
+    # Debug information
+    st.sidebar.title("Debug Information")
+    current_dir = os.getcwd()
+    st.sidebar.write(f"Current directory: {current_dir}")
+    files = os.listdir(current_dir)
+    st.sidebar.write("Files in directory:", files)
 
     st.title("🎭 Movie Review Sentiment Analysis")
     st.markdown("""
@@ -49,8 +68,8 @@ def main():
     
     with col1:
         st.subheader("Training Progress")
-        try:
-            rnn_training = Image.open('figure1.png')
+        rnn_training = load_image('Figure_1.png')
+        if rnn_training:
             st.image(rnn_training, caption="RNN Training Loss and Accuracy")
             st.markdown("""
             This graph shows how the RNN model learned:
@@ -58,13 +77,11 @@ def main():
             - The orange line shows how well it performs on new data
             - Lower loss and higher accuracy means better performance
             """)
-        except:
-            st.error("Could not load RNN training visualization")
 
     with col2:
         st.subheader("Confusion Matrix")
-        try:
-            rnn_confusion = Image.open('figure2.png')
+        rnn_confusion = load_image('Figure_2.png')
+        if rnn_confusion:
             st.image(rnn_confusion, caption="RNN Confusion Matrix")
             st.markdown("""
             This matrix shows how accurate the RNN model is:
@@ -72,8 +89,6 @@ def main():
             - Bottom right: Correctly identified positive reviews
             - Other boxes: Where the model made mistakes
             """)
-        except:
-            st.error("Could not load RNN confusion matrix")
 
     # LSTM Results
     st.header("📈 LSTM Model Results")
@@ -81,8 +96,8 @@ def main():
     
     with col1:
         st.subheader("Training Progress")
-        try:
-            lstm_training = Image.open('figure3.png')
+        lstm_training = load_image('Figure_3.png')
+        if lstm_training:
             st.image(lstm_training, caption="LSTM Training Loss and Accuracy")
             st.markdown("""
             This graph shows how the LSTM model learned:
@@ -90,13 +105,11 @@ def main():
             - The orange line shows how well it performs on new data
             - Lower loss and higher accuracy means better performance
             """)
-        except:
-            st.error("Could not load LSTM training visualization")
 
     with col2:
         st.subheader("Confusion Matrix")
-        try:
-            lstm_confusion = Image.open('figure4.png')
+        lstm_confusion = load_image('Figure_4.png')
+        if lstm_confusion:
             st.image(lstm_confusion, caption="LSTM Confusion Matrix")
             st.markdown("""
             This matrix shows how accurate the LSTM model is:
@@ -104,8 +117,6 @@ def main():
             - Bottom right: Correctly identified positive reviews
             - Other boxes: Where the model made mistakes
             """)
-        except:
-            st.error("Could not load LSTM confusion matrix")
 
     # Model Comparison
     st.header("🔄 Model Comparison")
