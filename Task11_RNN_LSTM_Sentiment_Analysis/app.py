@@ -1,11 +1,9 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 from PIL import Image
-import numpy as np
 import os
 
 def load_image(image_path):
-    """Load image with error handling and debugging."""
+    """Load image with error handling."""
     try:
         if not os.path.exists(image_path):
             st.error(f"Image file not found: {image_path}")
@@ -21,13 +19,6 @@ def main():
         page_icon="😊",
         layout="wide"
     )
-
-    # Debug information
-    st.sidebar.title("Debug Information")
-    current_dir = os.getcwd()
-    st.sidebar.write(f"Current directory: {current_dir}")
-    files = os.listdir(current_dir)
-    st.sidebar.write("Files in directory:", files)
 
     st.title("🎭 Movie Review Sentiment Analysis")
     st.markdown("""
@@ -45,7 +36,6 @@ def main():
     # Model Explanation
     st.header("🤖 Our Models")
     col1, col2 = st.columns(2)
-    
     with col1:
         st.subheader("RNN (Recurrent Neural Network)")
         st.markdown("""
@@ -53,7 +43,6 @@ def main():
         - It remembers what it read before while reading new words
         - Like a person reading a book and remembering the story
         """)
-    
     with col2:
         st.subheader("LSTM (Long Short-Term Memory)")
         st.markdown("""
@@ -65,10 +54,9 @@ def main():
     # RNN Results
     st.header("📊 RNN Model Results")
     col1, col2 = st.columns(2)
-    
     with col1:
         st.subheader("Training Progress")
-        rnn_training = load_image('Figure_1.png')
+        rnn_training = load_image('figure1.png')
         if rnn_training:
             st.image(rnn_training, caption="RNN Training Loss and Accuracy")
             st.markdown("""
@@ -77,10 +65,9 @@ def main():
             - The orange line shows how well it performs on new data
             - Lower loss and higher accuracy means better performance
             """)
-
     with col2:
         st.subheader("Confusion Matrix")
-        rnn_confusion = load_image('Figure_2.png')
+        rnn_confusion = load_image('figure2.png')
         if rnn_confusion:
             st.image(rnn_confusion, caption="RNN Confusion Matrix")
             st.markdown("""
@@ -93,10 +80,9 @@ def main():
     # LSTM Results
     st.header("📈 LSTM Model Results")
     col1, col2 = st.columns(2)
-    
     with col1:
         st.subheader("Training Progress")
-        lstm_training = load_image('Figure_3.png')
+        lstm_training = load_image('figure3.png')
         if lstm_training:
             st.image(lstm_training, caption="LSTM Training Loss and Accuracy")
             st.markdown("""
@@ -105,10 +91,9 @@ def main():
             - The orange line shows how well it performs on new data
             - Lower loss and higher accuracy means better performance
             """)
-
     with col2:
         st.subheader("Confusion Matrix")
-        lstm_confusion = load_image('Figure_4.png')
+        lstm_confusion = load_image('figure4.png')
         if lstm_confusion:
             st.image(lstm_confusion, caption="LSTM Confusion Matrix")
             st.markdown("""
