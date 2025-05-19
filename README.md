@@ -10,15 +10,15 @@ All models are trained **locally on CPU** and deployed using **Streamlit Cloud**
 
 | Task | Title | Live App |
 |------|-------|----------|
-| 01 | 🛒 Association Rule Mining (Apriori) | [ml-task1-100rabh.streamlit.app](https://ml-task01-100rabh.streamlit.app) |
-| 02 | 📈 Linear, Polynomial & Ridge Regression | [ml-task02-100rabh.streamlit.app](https://ml-task2-100rabh.streamlit.app) |
-| 03 | 🔍 K-Nearest Neighbors Classifier | [ml-task03-100rabh.streamlit.app](https://ml-task3-100rabh.streamlit.app) |
-| 04 | 🧠 SVM with Linear, Polynomial, and RBF Kernels | [ml-task4-100rabh.streamlit.app](https://ml-task04-100rabh.streamlit.app) |
-| 05 | ✉️ Naive Bayes Text Classification (English) | [ml-task05-100rabh.streamlit.app](https://ml-task5-100rabh.streamlit.app) |
-| 06 | 🔽 PCA on Iris Dataset | [ml-task06-100rabh.streamlit.app](https://ml-task6-100rabh.streamlit.app) |
-| 07 | 🎯 Find-S Algorithm | [ml-task7-100rabh.streamlit.app](https://ml-task07-100rabh.streamlit.app) |
-| 08 | 🧩 Candidate Elimination Algorithm | [ml-task08-100rabh.streamlit.app](https://ml-task8-100rabh.streamlit.app) |
-| 09 | 🧠 Custom CNN on MNIST & CIFAR-10 | [ml-task09-100rabh.streamlit.app](https://ml-task9-100rabh.streamlit.app) |
+| 01 | 🛒 Association Rule Mining (Apriori) | [ml-task1-100rabh.streamlit.app](https://ml-task1-100rabh.streamlit.app) |
+| 02 | 📈 Linear, Polynomial & Ridge Regression | [ml-task2-100rabh.streamlit.app](https://ml-task2-100rabh.streamlit.app) |
+| 03 | 🔍 K-Nearest Neighbors Classifier | [ml-task3-100rabh.streamlit.app](https://ml-task3-100rabh.streamlit.app) |
+| 04 | 🧠 SVM with Linear, Polynomial, and RBF Kernels | [ml-task4-100rabh.streamlit.app](https://ml-task4-100rabh.streamlit.app) |
+| 05 | ✉️ Naive Bayes Text Classification (English) | [ml-task5-100rabh.streamlit.app](https://ml-task5-100rabh.streamlit.app) |
+| 06 | 🔽 PCA on Iris Dataset | [ml-task6-100rabh.streamlit.app](https://ml-task6-100rabh.streamlit.app) |
+| 07 | 🎯 Find-S Algorithm | [ml-task7-100rabh.streamlit.app](https://ml-task7-100rabh.streamlit.app) |
+| 08 | 🧩 Candidate Elimination Algorithm | [ml-task8-100rabh.streamlit.app](https://ml-task8-100rabh.streamlit.app) |
+| 09 | 🧠 Custom CNN on MNIST & CIFAR-10 | [ml-task9-100rabh.streamlit.app](https://ml-task9-100rabh.streamlit.app) |
 | 10 | 🕹️ LeNet-5 on MNIST & Fashion MNIST | [ml-task10-100rabh.streamlit.app](https://ml-task10-100rabh.streamlit.app) |
 | 11 | 🎬 RNN & LSTM for Sentiment Analysis | [ml-task11-100rabh.streamlit.app](https://ml-task11-100rabh.streamlit.app) |
 | 12 | 🧼 Autoencoder for Image Denoising | [ml-task12-100rabh.streamlit.app](https://ml-task12-100rabh.streamlit.app) |
