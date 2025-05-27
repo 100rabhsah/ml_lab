@@ -4,6 +4,15 @@
 
 All models are trained **locally on CPU** and deployed using **Streamlit Cloud** for real-world usage and accessibility.
 
+
+---
+
+## 📋 Lab Task List Preview
+![Task List Preview](./ml_lab.png)  
+*Click image to view full resolution*
+
+---
+
 ---
 
 ## 🚀 Live Deployed Tasks
